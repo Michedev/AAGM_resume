@@ -1,0 +1,80 @@
+\chapter{Compute the diameter}
+\section{Definition of diameter}
+The diameter is the maximum distance between two vertices
+\section{A simple approach}
+In the general case the best approach is calculate APSP (All Pairs Shortest Path) then find the maximum distance, that has a time complexity of $ O(n^{2.38}) $ where the 2.38 derive from some optimization on matrix calculation(see below) for dense graph while $ O(mn) $ for sparse graph. The problem with this simple approach is that is not usable in real-world graphs because contains millions of nodes and edges.
+\section{Lower bound for diameter computation}
+\subsection{SETH Hypothesis}
+The Strong Exponential Time Hypothesis (SETH) says that there not exists an algorithm that solves k-SAT in less than $ O((2-\epsilon)^n) $ where $ \epsilon > 0 $
+\subsection{Reduction between two problems}
+Given two problems A and B, the relative sets of instances of the problem $ I_A $ and $ I_B $ and the solutions set $ A(x) $ and $ B(x) $ of a instance $ x $ we can say that A is reducible to B if exists two functions \textit{f} and \textit{g} where given $ x \in I_A $, $ x' = f(x) \in I_B $, $ y' = B(x') $ and $ g(y', x) \in A(x) $
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{img/problem_reduction}
+	\caption{Graphical representation of problem reduction}
+	\label{fig:problemreduction}
+\end{figure}
+\subsection{K-SAT*}
+A variant of the k-sat problem is the $ K-SAT^* $ where between them change only the input: The $ K-SAT^* $ receive two sets of assignments $ X  $ and $ Y$ of size $ n = 2^{\frac{m}{2}} $ to respectively the first half and second half of variables where m is the number of variables and a set of clauses $ C $.\\
+In order to find an assignment that satisfy $ C $ we combine each first-half assignment of X to Y, then try to check if applied to the set of clauses returns \textit{true}.\\
+So the complexity of the algorithm is virtually $ O(n^2) $ on the input size, but if we substitute n in function of m (the number of variables) we obtain $ O((2^{\frac{m}{2}})^2)  = O(2^m)$. Also this problem cannot have the complexity $ O(n^{2-\varepsilon}) $ unless SETH is false.
+Remember that SAT clauses are in CNF form that means:\\ \medskip
+\noindent
+$ (X_{1}\vee X_{2}\vee \cdots \vee X_{n})\wedge (Y_{1}\vee X_{2}\vee \cdots \vee X_{n})\wedge (X_{1}\vee Y_{2}\vee \cdots \vee X_{n})\wedge (Y_{1}\vee Y_{2}\vee \cdots \vee X_{n})\wedge \cdots \wedge (Y_{1}\vee Y_{2}\vee \cdots \vee Y_{n}). $\\
+To resume in words, in CNF  variables in the clause are concatenated with OR operator while the clauses are concatenated with AND operator
+\subsection{Disjoint set problem}
+Given a set of sets C, the solution is 1 when exists two sets $ A,B \in C $ such that $ A \cap B = \emptyset $.
+The complexity of this algorithm is $ O(|C|^2) $.
+\subsection{Reduction from K-SAT* to disjoint set}
+Given the set of all clauses $ C $ and X,Y respectively the assignment to the first and second half of variables, we define the collection $ S = S_1 \cup S_2 $ as follow:
+\begin{center}
+	$ S_1:= \{ \{t_1\} \cup \{ c : x \in X \nvDash c \,\, \forall c \in C \} \}$ \\ \medskip
+	$ S_2:= \{ \{t_2\} \cup \{ c : y \in Y \nvDash c \,\, \forall c \in C \} \}$
+\end{center}
+$ t_1 $ and $ t_2 $ are only tokens to avoid the empty intersection between set from the same assignment.\\
+To resume, if exists a good assignment in $ K-SAT^* $ then in disjoint sets should exists an empty intersection between two sets, one in $ S_1 $ and another in $ S_2 $.\\
+To explain the reduction from $ K-SAT^* $ to disjoin set, a good assignment should satisfy all the clauses in K-SAT* and this thing is transposed in disjoint set with the intersection operator: given $ s_1 \in S_1 $ and $ s_2 \in S_2 $ if $ s_1 \cap s_2 \ne \emptyset$ then exists a clause not satisfied both from X and Y so the clause if false, then is not a good assignment while a good assignment should satisfy all the clauses so it should not have any clause in the intersection.
+\subsection{From disjoint set to diameter computation}
+Given in input a set of sets $ C $ and the variables $ X $ we can build a clique of the size of  $ X $, then add a node for each subset in $ C $ and add an edge between the node  $ c_i \in C $  and $ x_j $ if $ x_j $ appears in the set $ c_i $.\\
+Then we can interpreter the diameter between $ c_i \text{ and } c_j $ in the following mode :
+\begin{itemize}
+	\item $ diameter(c_i, c_j) = 2  \rightarrow $  exists an intersection between $ c_i $ and $ c_j $
+	\item $ diameter(c_i, c_j) = 3  \rightarrow $ not exists an intersection between $ c_i $ and $ c_j $
+\end{itemize}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{img/disjoint_set_to_diameter}
+	\caption{Graphical representation of reduction from disjoint sets to diameter computation}
+	\label{fig:disjointsettodiameter}
+\end{figure}
+\subsection{Complexity of diameter computation}
+With the above reductions we have demonstrated that the complexity of diameter computation cannot be in the form $ O(n^{2 - \varepsilon}) $ unless SETH is false, so the complexity of diameter cannot be lower than $ O(n^2)  $
+\section{Heuristic for computing the diameter}
+\subsection{BFS and diameter}
+The height of BFS tree is a lower bound for computing the diameter. We can use this value also as approximation of the diameter doing many BFS from a random vertex. Below we present two methods to approximate the diameter with BFS. This approximations works well in various types of graphs (including social networks) but in other types not, for example road networks.
+\subsection{2-SWEEP}
+\begin{enumerate}
+	\item Pick a random vertex \textit{r}
+	\item Do a BFS from r
+	\item Pick \textit{x}, one of the farther vertexes from r
+	\item Do a BFS from \textit{x} and return the height of the BFS tree as diameter
+\end{enumerate}
+Complexity: $ 2 \cdot m $
+
+\begin{figure}[H]
+	\includegraphics[width=0.4\linewidth]{img/2sweep}
+	\caption{2-SWEEP graphical representation}
+	\label{fig:2sweep}
+\end{figure}
+\subsection{4-SWEEP}
+\begin{enumerate}
+	\item Do a 2-SWEEP
+	\item Pick one of the middle vertexes in the longest path of the 2-SWEEP
+	\item Do a 2-SWEEP from that vertex
+\end{enumerate}
+Complexity: $ 4 \cdot m $
+\section{Exact heuristic of diameter}
+\subsection{Eccentricity}
+The eccentricity of a vertex $ ecc(v) $ is the maximum distance between $ v $ and any other node
+\subsection{}
