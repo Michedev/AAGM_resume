@@ -137,7 +137,7 @@
 		 	\item choose a node \textit{x} not yet picked and that has the minimum $ dist[x] $
 		 	\item for each neighbour $ y \in N(x) $ set $ dist[y] = \min(dist[y], \,\,dist[x] + d(x,y)) $
 	 \end{enumerate}
-		\subsection{Demonstration of the correctness of  Dijkstra's algorithm}
+		\section{Demonstration of the correctness of  Dijkstra's algorithm}
 		To demonstrate the Dijkstra's algorithm we have to prove that given \textit{x} the node chosen at the step \textit{i} then $ dist[x] $ must be the minimum from \textit{s} to \textit{x}.\\
 			Let's introduce some terms: $ A_i $ is the set of nodes picked at the step \textit{i} and $ d_i(x) $ the shortest path only through the nodes in $ A_i $.\\
 			First, we prove by induction that $ dist[x] $ at the step i is equal to $ d_i(x) $:
@@ -158,7 +158,7 @@
 		 	\item  $ d(s,y) = d_i(y) $	since y is the first node outside of $ A_i $ (see above demonstration)
 	\end{itemize}
 	With the latter propositions we have an absurd because:\\ $ d(s,y) < d(s,x) < d_i(x) \leq d_i(y) = d(s,y) $\\
-	\subsection{Complexity of Dijkstra's algorithm}
+	\section{Complexity of Dijkstra's algorithm}
 	The complexity depends on the data structure used to represent $ dist $.\\
 	There are three types of time which complexity of Dijkstra's algorithm depends on:
 	\begin{itemize}
@@ -189,7 +189,7 @@
 		which is good if the graph is sparse
 		\chapter{Floyd-Warshall algorithm}
 		This algorithm solve the APSP problem with  edges having negative edges, but that not contains a negative cycle because if it exists the shortest path should pass through the cycle infinitely.
-		\subsection{Dynamic programming technique}
+		\section{Dynamic programming technique}
 		The dynamic programming technique is used in the Floyd-Warshall algorithm and consists of saving in a data structure the results of sub-problems of a generic algorithm to use them when a call with the same input happens.
 		\begin{figure}
 			\centering
@@ -197,7 +197,7 @@
 			\caption{Problem tree representation when it's useful the dynamic programming technique}
 			\label{fig:deepinscreenshot20180222212118}
 		\end{figure}
-		\subsection{The algorithm}
+		\section{The algorithm}
 		Let's define the following terms:
 		\begin{itemize}
 			\item $ A_0 = \emptyset $ and $ A_i = \{1 \dots i \} $
@@ -343,5 +343,6 @@ Since $ \varphi(0) $ and $ \varphi'(0) $ are 0 and $ \varphi''(\xi)  \leq \dfrac
 		Then the upper bound is dependent from $ \alpha $ (often $ \alpha = 2 $)
 		
 		\include{chapters/diameter}
+		\include{chapters/power_law}
 		
 	\end{document}	
